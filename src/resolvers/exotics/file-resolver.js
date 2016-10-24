@@ -25,6 +25,22 @@ export default class FileResolver extends ExoticResolver {
     if (!path.isAbsolute(loc)) {
       loc = path.join(this.config.cwd, loc);
     }
+
+    if (this.resolver.linkFileDependencies) {
+      const registry: RegistryNames = 'npm';
+      const manifest: Manifest = {_uid: '', name: '', version: 'link', _registry: registry};
+
+      manifest._remote = {
+        type: 'link',
+        registry,
+        reference: loc,
+      };
+
+      manifest._uid = manifest.version;
+
+      return manifest;
+    }
+
     if (!(await fs.exists(loc))) {
       throw new MessageError(this.reporter.lang('doesntExist', loc));
     }
