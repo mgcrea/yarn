@@ -60,6 +60,7 @@ type Flags = {
   lockfile: boolean,
   pureLockfile: boolean,
   skipIntegrity: boolean,
+  linkFileDependencies: boolean,
 
   // add
   peer: boolean,
@@ -83,6 +84,7 @@ function normalizeFlags(config: Config, rawFlags: Object): Flags {
     lockfile: rawFlags.lockfile !== false,
     pureLockfile: !!rawFlags.pureLockfile,
     skipIntegrity: !!rawFlags.skipIntegrity,
+    linkFileDependencies: !!rawFlags.linkFileDependencies,
 
     // add
     peer: !!rawFlags.peer,
@@ -134,7 +136,7 @@ export class Install {
     this.config = config;
     this.flags = normalizeFlags(config, flags);
 
-    this.resolver = new PackageResolver(config, lockfile);
+    this.resolver = new PackageResolver(config, lockfile, this.flags.linkFileDependencies);
     this.fetcher = new PackageFetcher(config, this.resolver);
     this.compatibility = new PackageCompatibility(config, this.resolver, this.flags.ignoreEngines);
     this.linker = new PackageLinker(config, this.resolver, this.flags.ignoreOptional);
@@ -652,6 +654,7 @@ export function _setFlags(commander: Object) {
   commander.option('--prod, --production', '');
   commander.option('--no-lockfile', "don't read or generate a lockfile");
   commander.option('--pure-lockfile', "don't generate a lockfile");
+  commander.option('--link-file-dependencies', "use symlink for file: dependencies");
 }
 
 export function setFlags(commander: Object) {
