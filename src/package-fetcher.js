@@ -43,7 +43,6 @@ export default class PackageFetcher {
     }
 
     const fetcher = new Fetcher(dest, remote, this.config);
-
     if (await this.config.isValidModuleDest(dest)) {
       return this.fetchCache(dest, fetcher);
     }

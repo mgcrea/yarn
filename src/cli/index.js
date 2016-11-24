@@ -56,6 +56,7 @@ commander.option('--flat', 'only allow one version of a package');
 commander.option('--prod, --production', '');
 commander.option('--no-lockfile', "don't read or generate a lockfile");
 commander.option('--pure-lockfile', "don't generate a lockfile");
+commander.option('--link-file-dependencies', 'use symlink for "file:" dependencies');
 commander.option('--global-folder <path>', '');
 commander.option(
   '--modules-folder <path>',
@@ -308,6 +309,7 @@ const runEventuallyWithNetwork = (mutexPort: ?string): Promise<void> => {
 };
 
 function onUnexpectedError(err: Error) {
+  d(err.stack);
   function indent(str: string): string {
     return '\n  ' + str.trim().split('\n').join('\n  ');
   }
@@ -379,6 +381,7 @@ config.init({
     return run().then(exit);
   }
 }).catch((err: Error) => {
+  d(err, err.stack);
   if (err instanceof MessageError) {
     reporter.error(err.message);
   } else {

@@ -127,21 +127,26 @@ export default class PackageLinker {
 
     //
     const queue: Map<string, CopyQueueItem> = new Map();
-    for (const [dest, {pkg, loc: src}] of flatTree) {
+    for (const [dest, {pkg, loc}] of flatTree) {
+      const remote = pkg._remote || {type: ''};
       const ref = pkg._reference;
+      const src = remote.type === 'link' ? remote.reference : loc;
       invariant(ref, 'expected package reference');
       ref.setLocation(dest);
 
       // get a list of build artifacts contained in this module so we can prevent them from being marked as
       // extraneous
-      const metadata = await this.config.readPackageMetadata(src);
-      for (const file of metadata.artifacts) {
-        phantomFiles.push(path.join(dest, file));
+      if (remote.type !== 'link') {
+        const metadata = await this.config.readPackageMetadata(src);
+        for (const file of metadata.artifacts) {
+          phantomFiles.push(path.join(dest, file));
+        }
       }
 
       queue.set(dest, {
         src,
         dest,
+        type: remote.type,
         onFresh() {
           if (ref) {
             ref.setFresh(true);
@@ -158,7 +163,15 @@ export default class PackageLinker {
       if (await fs.exists(loc)) {
         const files = await fs.readdir(loc);
         for (const file of files) {
-          possibleExtraneous.add(path.join(loc, file));
+          // scoped packages
+          if (file.startsWith('@')) {
+            const scopedFiles = await fs.readdir(path.join(loc, file));
+            for (const scopedFile of scopedFiles) {
+              possibleExtraneous.add(path.join(loc, file, scopedFile));
+            }
+          } else {
+            possibleExtraneous.add(path.join(loc, file));
+          }
         }
       }
     }
