@@ -7,6 +7,7 @@ import type {Reporter} from './reporters/index.js';
 import type PackageReference from './package-reference.js';
 import type Config from './config.js';
 import {MessageError} from './errors.js';
+import type {Manifest} from './types.js';
 import * as fetchers from './fetchers/index.js';
 import * as fs from './util/fs.js';
 import * as promise from './util/promise.js';
@@ -37,6 +38,13 @@ export default class PackageFetcher {
     const dest = this.config.generateHardModulePath(ref);
 
     const remote = ref.remote;
+
+    // Mock metedata for linked dependencies
+    if (remote.type === 'link') {
+      const mockPkg: Manifest = {_uid: '', name: '', version: '0.0.0'};
+      return Promise.resolve({resolved: null, hash: '', dest, package: mockPkg, cached: false});
+    }
+
     const Fetcher = fetchers[remote.type];
     if (!Fetcher) {
       throw new MessageError(this.reporter.lang('unknownFetcherFor', remote.type));
