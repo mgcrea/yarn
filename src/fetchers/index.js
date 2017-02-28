@@ -20,4 +20,5 @@ export type FetcherNames =
   | 'base'
   | 'copy'
   | 'git'
+  | 'link'
   | 'tarball';

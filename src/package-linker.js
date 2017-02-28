@@ -128,16 +128,20 @@ export default class PackageLinker {
     const hardlinksEnabled = linkDuplicates && await fs.hardlinksWork(this.config.cwd);
 
     const copiedSrcs: Map<string, string> = new Map();
-    for (const [dest, {pkg, loc: src}] of flatTree) {
+    for (const [dest, {pkg, loc}] of flatTree) {
+      const remote = pkg._remote || {type: ''};
       const ref = pkg._reference;
+      const src = remote.type === 'link' ? remote.reference : loc;
       invariant(ref, 'expected package reference');
       ref.setLocation(dest);
 
       // get a list of build artifacts contained in this module so we can prevent them from being marked as
-      // extraneous
-      const metadata = await this.config.readPackageMetadata(src);
-      for (const file of metadata.artifacts) {
-        artifactFiles.push(path.join(dest, file));
+      // extraneous, does not apply to linked dependencies
+      if (remote.type !== 'link') {
+        const metadata = await this.config.readPackageMetadata(src);
+        for (const file of metadata.artifacts) {
+          artifactFiles.push(path.join(dest, file));
+        }
       }
 
       const copiedDest = copiedSrcs.get(src);
@@ -148,6 +152,7 @@ export default class PackageLinker {
         copyQueue.set(dest, {
           src,
           dest,
+          type: remote.type,
           onFresh() {
             if (ref) {
               ref.setFresh(true);
