@@ -208,8 +208,8 @@ class ImportPackageRequest extends PackageRequest {
 }
 
 class ImportPackageResolver extends PackageResolver {
-  constructor(config: Config, lockfile: Lockfile) {
-    super(config, lockfile);
+  constructor(config: Config, lockfile: Lockfile, linkFileDependencies: bool) {
+    super(config, lockfile, linkFileDependencies);
     this.next = [];
     this.rootName = 'root';
   }
@@ -271,7 +271,7 @@ export class Import extends Install {
     lockfile: Lockfile,
   ) {
     super(flags, config, reporter, lockfile);
-    this.resolver = new ImportPackageResolver(this.config, this.lockfile);
+    this.resolver = new ImportPackageResolver(this.config, this.lockfile, false);
     this.fetcher = new PackageFetcher(config, this.resolver);
     this.compatibility = new PackageCompatibility(config, this.resolver, this.flags.ignoreEngines);
     this.linker = new PackageLinker(config, this.resolver);

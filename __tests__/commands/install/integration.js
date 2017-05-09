@@ -82,7 +82,7 @@ test('changes the cache directory when bumping the cache version', async () => {
   await runInstall({}, 'install-production', async (config, reporter): Promise<void> => {
     const lockfile = await Lockfile.fromDirectory(config.cwd);
 
-    const resolver = new PackageResolver(config, lockfile);
+    const resolver = new PackageResolver(config, lockfile, false);
     await resolver.init([{pattern: 'is-array', registry: 'npm'}]);
 
     const ref = resolver.getPackageReferences()[0];

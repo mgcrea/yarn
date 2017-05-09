@@ -48,6 +48,7 @@ type Flags = {
   ignoreScripts: boolean,
   ignoreOptional: boolean,
   linkDuplicates: boolean,
+  linkFileDependencies: boolean,
   force: boolean,
   flat: boolean,
   lockfile: boolean,
@@ -123,6 +124,7 @@ function normalizeFlags(config: Config, rawFlags: Object): Flags {
     skipIntegrityCheck: !!rawFlags.skipIntegrityCheck,
     frozenLockfile: !!rawFlags.frozenLockfile,
     linkDuplicates: !!rawFlags.linkDuplicates,
+    linkFileDependencies: !!rawFlags.linkFileDependencies,
     checkFiles: !!rawFlags.checkFiles,
 
     // add
@@ -171,7 +173,7 @@ export class Install {
     this.config = config;
     this.flags = normalizeFlags(config, flags);
 
-    this.resolver = new PackageResolver(config, lockfile);
+    this.resolver = new PackageResolver(config, lockfile, this.flags.linkFileDependencies);
     this.fetcher = new PackageFetcher(config, this.resolver);
     this.integrityChecker = new InstallationIntegrityChecker(config);
     this.compatibility = new PackageCompatibility(config, this.resolver, this.flags.ignoreEngines);

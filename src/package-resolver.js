@@ -15,7 +15,7 @@ const invariant = require('invariant');
 const semver = require('semver');
 
 export default class PackageResolver {
-  constructor(config: Config, lockfile: Lockfile) {
+  constructor(config: Config, lockfile: Lockfile, linkFileDependencies: bool) {
     this.patternsByPackage = map();
     this.fetchingPatterns = map();
     this.fetchingQueue = new BlockingQueue('resolver fetching');
@@ -25,6 +25,7 @@ export default class PackageResolver {
     this.flat = false;
 
     this.reporter = config.reporter;
+    this.linkFileDependencies = linkFileDependencies;
     this.lockfile = lockfile;
     this.config = config;
   }
@@ -63,6 +64,9 @@ export default class PackageResolver {
   patternsByPackage: {
     [packageName: string]: Array<string>
   };
+
+  // whether the file dependencies will be linked
+  linkFileDependencies: boolean;
 
   // lockfile instance which we can use to retrieve version info
   lockfile: Lockfile;

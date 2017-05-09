@@ -41,7 +41,7 @@ function createTestFixture(testModules: any = {}): any {
 
   // build Manifests with just enough information to get the PackageHoister to work.
   const lockfile = new Lockfile();
-  const packageResolver = new PackageResolver(config, lockfile);
+  const packageResolver = new PackageResolver(config, lockfile, false);
   Object.keys(testModules).map((uid) => {
     const packageManifest = createManifestForUid(uid, testModules[uid]);
 

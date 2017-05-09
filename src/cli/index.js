@@ -51,6 +51,7 @@ commander.option('--no-lockfile', "don't read or generate a lockfile");
 commander.option('--pure-lockfile', "don't generate a lockfile");
 commander.option('--frozen-lockfile', "don't generate a lockfile and fail if an update is needed");
 commander.option('--link-duplicates', 'create hardlinks to the repeated modules in node_modules');
+commander.option('--link-file-dependencies', 'create symlinks for "file:" dependencies');
 commander.option('--global-folder <path>', 'specify a custom folder to store global packages');
 commander.option(
   '--modules-folder <path>',

@@ -16,7 +16,7 @@ const path = require('path');
 // regexp which verifies that cache path contains semver + hash
 const cachePathRe = /-\d+\.\d+\.\d+-[\dabcdef]{40}$/;
 
-function addTest(pattern, registry = 'npm', init: ?(cacheFolder: string) => Promise<any>, offline = false) {
+function addTest(pattern, registry = 'npm', init: ?(cacheFolder: string) => Promise<any>, offline = false, linkFileDependencies = false) {
   // concurrently network requests tend to stall
   test(`${offline ? 'offline ' : ''}resolve ${pattern}`, async () => {
     const lockfile = new Lockfile();
@@ -38,7 +38,7 @@ function addTest(pattern, registry = 'npm', init: ?(cacheFolder: string) => Prom
       await init(config.cacheFolder);
     }
 
-    const resolver = new PackageResolver(config, lockfile);
+    const resolver = new PackageResolver(config, lockfile, linkFileDependencies);
     await resolver.init([{pattern, registry}]);
 
     const ref = resolver.getPackageReferences()[0];
