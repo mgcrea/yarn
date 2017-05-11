@@ -124,7 +124,7 @@ function normalizeFlags(config: Config, rawFlags: Object): Flags {
     skipIntegrityCheck: !!rawFlags.skipIntegrityCheck,
     frozenLockfile: !!rawFlags.frozenLockfile,
     linkDuplicates: !!rawFlags.linkDuplicates,
-    linkFileDependencies: !!rawFlags.linkFileDependencies,
+    linkFileDependencies: config.linkFileDependencies || !!rawFlags.linkFileDependencies,
     checkFiles: !!rawFlags.checkFiles,
 
     // add
