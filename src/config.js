@@ -41,6 +41,7 @@ export type ConfigOptions = {
   childConcurrency?: number,
   networkTimeout?: number,
   nonInteractive?: boolean,
+  linkFileDependencies?: boolean,
 
   // Loosely compare semver for invalid cases like "0.01.0"
   looseSemver?: ?boolean,
@@ -139,6 +140,8 @@ export default class Config {
   production: boolean;
 
   nonInteractive: boolean;
+
+  linkFileDependencies: boolean;
 
   //
   cwd: string;
@@ -265,6 +268,7 @@ export default class Config {
       constants.MODULE_CACHE_DIRECTORY,
     );
 
+    this.linkFileDependencies = Boolean(this.getOption('link-file-dependencies'));
     this.pruneOfflineMirror = Boolean(this.getOption('yarn-offline-mirror-pruning'));
     this.disableLockfileVersions = Boolean(this.getOption('yarn-disable-lockfile-versions'));
 
